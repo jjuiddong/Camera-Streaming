@@ -56,6 +56,7 @@ public:
 	CComboBox m_comboJpegQuality;
 	afx_msg void OnBnClickedCheckComp();
 	CComboBox m_comboProtocol;
+	CComboBox m_comboNetCardIndex;
 };
 
 
@@ -112,6 +113,7 @@ void CClientDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHECK_COMP, m_checkCompressed);
 	DDX_Control(pDX, IDC_COMBO_COMP_RATE, m_comboJpegQuality);
 	DDX_Control(pDX, IDC_COMBO_PROTOCOL, m_comboProtocol);
+	DDX_Control(pDX, IDC_COMBO_NETCARD_INDEX, m_comboNetCardIndex);
 }
 
 BEGIN_MESSAGE_MAP(CClientDlg, CDialogEx)
@@ -130,7 +132,8 @@ BOOL CClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
 
-	m_IP.SetAddress(127, 0, 0, 1);
+	//m_IP.SetAddress(127, 0, 0, 1);
+	m_IP.SetAddress(192,168,0,7);
 
 	m_comboJpegQuality.AddString(L"100");
 	m_comboJpegQuality.AddString(L"90");
@@ -143,6 +146,12 @@ BOOL CClientDlg::OnInitDialog()
 	m_comboProtocol.AddString(L"TCP");
 	m_comboProtocol.AddString(L"UDP");
 	m_comboProtocol.SetCurSel(0);
+
+	m_comboNetCardIndex.AddString(L"0");
+	m_comboNetCardIndex.AddString(L"1");
+	m_comboNetCardIndex.AddString(L"2");
+	m_comboNetCardIndex.AddString(L"3");
+	m_comboNetCardIndex.SetCurSel(0);
 
 	return TRUE;
 }
@@ -234,10 +243,20 @@ void CClientDlg::OnBnClickedButtonConnect()
 		m_comboJpegQuality.GetWindowText(strJpegQuality);
 		const int jpegQuality = _ttoi((LPCTSTR)strJpegQuality);
 
+		CString strNetCardIdx;
+		m_comboNetCardIndex.GetWindowText(strNetCardIdx);
+		const int netCardIdx = _ttoi((LPCTSTR)strNetCardIdx);
+
+		CString strProtocol;
+		m_comboProtocol.GetWindowTextW(strProtocol);
+		const bool isUDP = (strProtocol == L"UDP");
+
 		const string ip = GetIP(m_IP);
-		if (m_streamRcv.Init(true, ip, m_port, 0, m_checkGray, m_checkCompressed, jpegQuality))
+		if (m_streamRcv.Init(isUDP, ip, m_port, netCardIdx, m_checkGray, m_checkCompressed, jpegQuality))
 		{
 			Log("Success Connect Server");
+			if (isUDP)
+				Log(common::format("    - Receive UDP IP = %s ", m_streamRcv.m_rcvUDPIp.c_str()));
 
 			m_state = START;
 			m_buttonConnect.SetWindowTextW(L"Stop");
