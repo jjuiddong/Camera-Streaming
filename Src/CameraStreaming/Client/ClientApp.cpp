@@ -39,6 +39,7 @@ protected:
 	bool m_loop;
 	cvproc::cStreamingReceiver m_streamRcv;
 	CImageFrameWnd *m_imgWindow;
+	int m_recvImageCount;
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -57,6 +58,7 @@ public:
 	afx_msg void OnBnClickedCheckComp();
 	CComboBox m_comboProtocol;
 	CComboBox m_comboNetCardIndex;
+	CStatic m_staticIps;
 };
 
 
@@ -98,6 +100,7 @@ CClientDlg::CClientDlg(CWnd* pParent /*=NULL*/)
 	, m_imgWindow(NULL)
 	, m_checkGray(FALSE)
 	, m_checkCompressed(FALSE)
+	, m_recvImageCount(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -114,6 +117,7 @@ void CClientDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_COMP_RATE, m_comboJpegQuality);
 	DDX_Control(pDX, IDC_COMBO_PROTOCOL, m_comboProtocol);
 	DDX_Control(pDX, IDC_COMBO_NETCARD_INDEX, m_comboNetCardIndex);
+	DDX_Control(pDX, IDC_STATIC_FPS, m_staticIps);
 }
 
 BEGIN_MESSAGE_MAP(CClientDlg, CDialogEx)
@@ -131,6 +135,9 @@ BOOL CClientDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
+
+	common::dbg::RemoveLog();
+	common::dbg::RemoveErrLog();
 
 	//m_IP.SetAddress(127, 0, 0, 1);
 	m_IP.SetAddress(192,168,0,7);
@@ -203,12 +210,10 @@ void CClientDlg::Run()
 		}
 
 		const int curT = timeGetTime();
-		if (curT - oldT > 20)
-		{
-			const float deltaSeconds = (curT - oldT) * 0.001f;
-			oldT = curT;
-			MainLoop(deltaSeconds);
-		}
+		const float deltaSeconds = (curT - oldT) * 0.001f;
+		oldT = curT;
+		MainLoop(deltaSeconds);
+
 		Sleep(1);
 	}
 }
@@ -218,6 +223,9 @@ void CClientDlg::MainLoop(const float deltaSeconds)
 {
 	RET(m_state == STOP);
 	RET(!m_streamRcv.IsConnect());
+
+	static float elapseTime = 0;
+	elapseTime += deltaSeconds;
 
 	if (m_streamRcv.Update())
 	{
@@ -229,6 +237,14 @@ void CClientDlg::MainLoop(const float deltaSeconds)
 		}
 
 		m_imgWindow->ShowImage(m_streamRcv.m_cloneImage);
+
+		++m_recvImageCount;
+		if (elapseTime > 1.f)
+		{
+			m_staticIps.SetWindowTextW(common::formatw("Receive Image per Second = %d", m_recvImageCount).c_str());
+			elapseTime = 0;
+			m_recvImageCount = 0;
+		}
 	}
 }
 
@@ -258,9 +274,12 @@ void CClientDlg::OnBnClickedButtonConnect()
 			if (isUDP)
 				Log(common::format("    - Receive UDP IP = %s ", m_streamRcv.m_rcvUDPIp.c_str()));
 
+			m_streamRcv.m_isLog = true;
 			m_state = START;
 			m_buttonConnect.SetWindowTextW(L"Stop");
 			SetBackgroundColor(g_blueColor);
+			if (m_imgWindow)
+				m_imgWindow->ShowWindow(SW_SHOW);
 		}
 		else
 		{
@@ -270,7 +289,7 @@ void CClientDlg::OnBnClickedButtonConnect()
 	else // START
 	{
 		m_state = STOP;
-		m_buttonConnect.SetWindowTextW(L"Server Start");
+		m_buttonConnect.SetWindowTextW(L"Connect");
 		m_streamRcv.Close();
 		SetBackgroundColor(g_grayColor);
 		Log("Stop Receive");
