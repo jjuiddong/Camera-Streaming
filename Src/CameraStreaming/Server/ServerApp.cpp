@@ -183,12 +183,10 @@ void CServerDlg::Run()
 		}
 
 		const int curT = timeGetTime();
-		//if (curT - oldT > 20)
-		{
-			const float deltaSeconds = (curT - oldT) * 0.001f;
-			oldT = curT;
-			MainLoop(deltaSeconds);
-		}
+		const float deltaSeconds = (curT - oldT) * 0.001f;
+		oldT = curT;
+		MainLoop(deltaSeconds);
+
 		Sleep(1);
 	}
 }
