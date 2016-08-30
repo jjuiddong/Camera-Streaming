@@ -59,6 +59,7 @@ public:
 	CComboBox m_comboProtocol;
 	CComboBox m_comboNetCardIndex;
 	CStatic m_staticIps;
+	CComboBox m_comboFPS;
 };
 
 
@@ -118,6 +119,7 @@ void CClientDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_PROTOCOL, m_comboProtocol);
 	DDX_Control(pDX, IDC_COMBO_NETCARD_INDEX, m_comboNetCardIndex);
 	DDX_Control(pDX, IDC_STATIC_FPS, m_staticIps);
+	DDX_Control(pDX, IDC_COMBO_FPS, m_comboFPS);
 }
 
 BEGIN_MESSAGE_MAP(CClientDlg, CDialogEx)
@@ -159,6 +161,13 @@ BOOL CClientDlg::OnInitDialog()
 	m_comboNetCardIndex.AddString(L"2");
 	m_comboNetCardIndex.AddString(L"3");
 	m_comboNetCardIndex.SetCurSel(0);
+
+	m_comboFPS.AddString(L"50");
+	m_comboFPS.AddString(L"40");
+	m_comboFPS.AddString(L"30");
+	m_comboFPS.AddString(L"20");
+	m_comboFPS.AddString(L"10");
+	m_comboFPS.SetCurSel(2);
 
 	return TRUE;
 }
@@ -263,12 +272,16 @@ void CClientDlg::OnBnClickedButtonConnect()
 		m_comboNetCardIndex.GetWindowText(strNetCardIdx);
 		const int netCardIdx = _ttoi((LPCTSTR)strNetCardIdx);
 
+		CString strFPS;
+		m_comboFPS.GetWindowText(strFPS);
+		const int fps = _ttoi((LPCTSTR)strFPS);
+
 		CString strProtocol;
 		m_comboProtocol.GetWindowTextW(strProtocol);
 		const bool isUDP = (strProtocol == L"UDP");
 
 		const string ip = GetIP(m_IP);
-		if (m_streamRcv.Init(isUDP, ip, m_port, netCardIdx, m_checkGray, m_checkCompressed, jpegQuality))
+		if (m_streamRcv.Init(isUDP, ip, m_port, netCardIdx, m_checkGray, m_checkCompressed, jpegQuality, fps))
 		{
 			Log("Success Connect Server");
 			if (isUDP)
