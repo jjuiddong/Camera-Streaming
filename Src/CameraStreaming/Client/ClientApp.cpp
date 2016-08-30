@@ -140,7 +140,7 @@ BOOL CClientDlg::OnInitDialog()
 	common::dbg::RemoveErrLog();
 
 	//m_IP.SetAddress(127, 0, 0, 1);
-	m_IP.SetAddress(192,168,0,7);
+	m_IP.SetAddress(192,168,0,13);
 
 	m_comboJpegQuality.AddString(L"100");
 	m_comboJpegQuality.AddString(L"90");
@@ -224,9 +224,6 @@ void CClientDlg::MainLoop(const float deltaSeconds)
 	RET(m_state == STOP);
 	RET(!m_streamRcv.IsConnect());
 
-	static float elapseTime = 0;
-	elapseTime += deltaSeconds;
-
 	if (m_streamRcv.Update())
 	{
 		if (!m_imgWindow)
@@ -237,14 +234,17 @@ void CClientDlg::MainLoop(const float deltaSeconds)
 		}
 
 		m_imgWindow->ShowImage(m_streamRcv.m_cloneImage);
-
 		++m_recvImageCount;
-		if (elapseTime > 1.f)
-		{
-			m_staticIps.SetWindowTextW(common::formatw("Receive Image per Second = %d", m_recvImageCount).c_str());
-			elapseTime = 0;
-			m_recvImageCount = 0;
-		}
+	}
+
+	// 속도 측정
+	static float elapseTime = 0;
+	elapseTime += deltaSeconds;
+	if (elapseTime > 1.f)
+	{
+		m_staticIps.SetWindowTextW(common::formatw("Receive Image per Second = %d", m_recvImageCount).c_str());
+		elapseTime = 0;
+		m_recvImageCount = 0;
 	}
 }
 

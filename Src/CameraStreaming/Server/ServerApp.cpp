@@ -37,6 +37,7 @@ protected:
 	STATE m_state;
 	HICON m_hIcon;
 	bool m_loop;
+	int m_sndImageCount;
 	cvproc::cStreamingSender m_streamSender;
 	cvproc::cDxCapture m_camera;
 	CImageFrameWnd *m_imgWindow;
@@ -54,6 +55,7 @@ public:
 	CListBox m_listLog;
 	CComboBox m_comboCamIndex;
 	CComboBox m_comboCamWH;
+	CStatic m_staticIps;
 };
 
 #ifdef _DEBUG
@@ -93,6 +95,7 @@ CServerDlg::CServerDlg(CWnd* pParent /*=NULL*/)
 	, m_loop(true)
 	, m_serverPort(11000)
 	, m_imgWindow(NULL)
+	, m_sndImageCount(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -105,6 +108,7 @@ void CServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_LOG, m_listLog);
 	DDX_Control(pDX, IDC_COMBO_CAM_INDEX, m_comboCamIndex);
 	DDX_Control(pDX, IDC_COMBO_CAM_WH, m_comboCamWH);
+	DDX_Control(pDX, IDC_STATIC_FPS, m_staticIps);
 }
 
 BEGIN_MESSAGE_MAP(CServerDlg, CDialogEx)
@@ -200,7 +204,21 @@ void CServerDlg::MainLoop(const float deltaSeconds)
 	if (m_imgWindow && m_imgWindow->IsWindowVisible())
 		m_imgWindow->ShowImage(src);
 
-	m_streamSender.Send(src);	
+	if (!m_streamSender.IsExistClient())
+		return;
+
+	if (m_streamSender.Send(src) > 0)
+		++m_sndImageCount;
+
+	// 속도 측정
+	static float elapseTime = 0;
+	elapseTime += deltaSeconds;
+	if (elapseTime > 1.f)
+	{
+		m_staticIps.SetWindowTextW(common::formatw("Send Image per Second = %d", m_sndImageCount).c_str());
+		elapseTime = 0;
+		m_sndImageCount = 0;
+	}
 }
 
 
