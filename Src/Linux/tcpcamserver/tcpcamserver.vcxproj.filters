@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\netcom\udpserver.cpp" />
+    <ClCompile Include="..\netcom\netlauncher.cpp" />
+    <ClCompile Include="..\netcom\packetqueue.cpp" />
+    <ClCompile Include="..\netcom\udpclient.cpp" />
+    <ClCompile Include="..\opencvcom\streamingsender.cpp" />
+    <ClCompile Include="..\netcom\tcpclient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\netcom\network.h" />
+    <ClInclude Include="..\netcom\tcpserver.h" />
+    <ClInclude Include="..\opencvcom\streaming.h" />
+    <ClInclude Include="..\netcom\udpserver.h" />
+    <ClInclude Include="..\netcom\netlauncher.h" />
+    <ClInclude Include="..\netcom\packetqueue.h" />
+    <ClInclude Include="..\netcom\udpclient.h" />
+    <ClInclude Include="..\opencvcom\streamingsender.h" />
+    <ClInclude Include="..\netcom\tcpclient.h" />
+  </ItemGroup>
+</Project>

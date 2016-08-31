@@ -253,3 +253,5 @@ paket-files/
 
 log.txt
 errlog.txt
+*.o
+~*
