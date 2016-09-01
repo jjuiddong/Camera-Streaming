@@ -55,6 +55,9 @@ bool network::LaunchServer(const int port, OUT SOCKET &out)
 		return false;
 	}
 
+	int option = 1;
+	setsockopt(ssock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+
 	struct sockaddr_in server_addr;
 	bzero(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;

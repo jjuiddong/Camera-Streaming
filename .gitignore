@@ -255,3 +255,4 @@ log.txt
 errlog.txt
 *.o
 ~*
+Src/CameraStreaming/Client/log.txt
