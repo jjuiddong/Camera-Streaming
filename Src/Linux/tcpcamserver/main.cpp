@@ -59,7 +59,6 @@ int main(int argc, char **argv)
 		long curT = GetTickCount();
 		if (curT - oldT > 1000)
 		{
-			//printf("fps = %d\n", fps);
 			oldT = curT;
 			fps = 0;
 		}
@@ -67,11 +66,7 @@ int main(int argc, char **argv)
 		sender.CheckPacket();
 
 		cap.read(frame);
-// 		cvGrabFrame(capture);
-// 		IplImage *frame = cvRetrieveFrame(capture);
-		Mat src = Mat(frame);
 		sender.Send(frame);
-		//cout << "w = " << frame.cols << ", h = " << frame.rows << endl;
 		cvWaitKey(1);
 	}
 

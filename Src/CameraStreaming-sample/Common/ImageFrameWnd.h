@@ -35,15 +35,15 @@ public:
 	CImageFrameWnd();
 	virtual ~CImageFrameWnd();
 
-	bool Init(const string &windowName, const string &fileName, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize=false);
-	bool Init(const string &windowName, const cv::Mat &img, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize = false);
+	bool Init(const string &windowName, const string &fileName, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize=false, const bool isTopmost=true);
+	bool Init(const string &windowName, const cv::Mat &img, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize = false, const bool isTopmost = true);
 	bool ShowImage(const string &fileName);
 	bool ShowImage(const cv::Mat &img);
 	void SetAutoSize(const bool isAutoSize);
 
 
 protected:
-	void Initialize(const string &windowName, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize);
+	void Initialize(const string &windowName, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize, const bool isTopmost);
 	void ReCalcWindowSize();
 
 

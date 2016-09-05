@@ -113,25 +113,26 @@ END_MESSAGE_MAP()
 // CImageFrameWnd2 message handlers
 
 bool CImageFrameWnd::Init(const string &windowName, const string &fileName, const CRect &initialRect, 
-	CWnd *parentWnd, const bool isAutoSize)
+	CWnd *parentWnd, const bool isAutoSize, const bool isTopmost)
 {
-	Initialize(windowName, initialRect, parentWnd, isAutoSize);
+	Initialize(windowName, initialRect, parentWnd, isAutoSize, isTopmost);
 	ShowImage(fileName);
 	return true;
 }
 
 
 bool CImageFrameWnd::Init(const string &windowName, const cv::Mat &img, const CRect &initialRect, 
-	CWnd *parentWnd, const bool isAutoSize)
+	CWnd *parentWnd, const bool isAutoSize, const bool isTopmost)
 {
-	Initialize(windowName, initialRect, parentWnd, isAutoSize);
+	Initialize(windowName, initialRect, parentWnd, isAutoSize, isTopmost);
 	ShowImage(img);
 	return true;
 }
 
 
 // 윈도우 초기화, 
-void CImageFrameWnd::Initialize(const string &windowName, const CRect &initialRect, CWnd *parentWnd, const bool isAutoSize)
+void CImageFrameWnd::Initialize(const string &windowName, const CRect &initialRect, 
+	CWnd *parentWnd, const bool isAutoSize, const bool isTopmost)
 {
 	const CString strClass = AfxRegisterWndClass(CS_HREDRAW | CS_VREDRAW, 0, (HBRUSH)(COLOR_WINDOW + 1));
 	CreateEx(0, strClass,
@@ -151,8 +152,7 @@ void CImageFrameWnd::Initialize(const string &windowName, const CRect &initialRe
 	m_isAutoSize = isAutoSize;
 	m_windowName = windowName;
 
-	// TopMost
-	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+	::SetWindowPos(m_hWnd, isTopmost? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 

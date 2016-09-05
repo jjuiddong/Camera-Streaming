@@ -133,13 +133,11 @@ int cStreamingReceiver::Update()
 
 		if (packet->isGray)
 		{
-			m_tempBuffer.resize(packet->imageBytes);
  			m_finalImage = Mat(packet->height, packet->width, CV_8UC1);
 			m_cloneImage = Mat(packet->height, packet->width, CV_8UC1);
 		}
 		else
 		{
-			m_tempBuffer.resize(packet->imageBytes);
 			m_finalImage = Mat(packet->height, packet->width, packet->flag);
 			m_cloneImage = Mat(packet->height, packet->width, packet->flag);
 		}
@@ -148,6 +146,7 @@ int cStreamingReceiver::Update()
 	int reVal = 0;
 	if (packet->chunkSize == 1)
 	{
+		m_tempBuffer.resize(packet->imageBytes);
 		packet->data = m_rcvBuffer + sizeof(sStreamingData);
 
 		if (packet->isCompressed)

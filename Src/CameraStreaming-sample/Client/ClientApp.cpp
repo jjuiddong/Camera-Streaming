@@ -138,7 +138,7 @@ BOOL CClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);
 
 	//m_IP.SetAddress(127, 0, 0, 1);
-	m_IP.SetAddress(192,168,0,13);
+	m_IP.SetAddress(192,168,0,15);
 
 	m_comboJpegQuality.AddString(L"100");
 	m_comboJpegQuality.AddString(L"90");
@@ -235,7 +235,7 @@ void CClientDlg::MainLoop(const float deltaSeconds)
 		{
 			CGdiPlus::Init();
 			m_imgWindow = new CImageFrameWnd();
-			m_imgWindow->Init("camera", Mat(), CRect(0, 0, 300, 300), this, true);
+			m_imgWindow->Init("camera", Mat(), CRect(0, 0, 300, 300), this, true, false);
 		}
 
 		m_imgWindow->ShowImage(m_streamRcv.m_cloneImage);
